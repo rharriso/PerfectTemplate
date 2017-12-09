@@ -21,6 +21,8 @@ import PerfectLib
 import PerfectHTTP
 import PerfectHTTPServer
 
+import GraphQL
+
 // An example request handler.
 // This 'handler' function can be referenced directly in the configuration below.
 func handler(data: [String:Any]) throws -> RequestHandler {
@@ -33,6 +35,32 @@ func handler(data: [String:Any]) throws -> RequestHandler {
 		response.completed()
 	}
 }
+
+func graphQLHandler(data: [String:Any]) throws -> RequestHandler {
+	let query = "{ hello }"
+	let result = try graphql(schema: schema, query: query)
+	return {
+		request, response in
+		// Respond with a simple message.
+		response.setHeader(.contentType, value: "text/html")
+		response.appendBody(string: result)
+		// Ensure that response.completed() is called when your processing is done.
+		response.completed()
+	}
+}
+
+// configure the graph
+let schema = try GraphQLSchema(
+	query: GraphQLObjectType(
+		name: "RootQueryType",
+		fields: [
+			"hello": GraphQLField(
+				type: GraphQLString,
+				resolve: { _ in "world" }
+			)
+		]
+	)
+)
 
 // Configuration data for an example server.
 // This example configuration shows how to launch a server

@@ -6,5 +6,7 @@ let package = Package(
 	targets: [],
 	dependencies: [
 		.Package(url: "https://github.com/PerfectlySoft/Perfect-HTTPServer.git", majorVersion: 3),
+		.Package(url: "https://github.com/GraphQLSwift/GraphQL.git", majorVersion: 0),
+		.Package(url: "https://github.com/GraphQLSwift/Graphiti.git", majorVersion: 0, minor: 1),
 	]
 )
