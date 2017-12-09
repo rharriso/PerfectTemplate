@@ -36,19 +36,6 @@ func handler(data: [String:Any]) throws -> RequestHandler {
 	}
 }
 
-func graphQLHandler(data: [String:Any]) throws -> RequestHandler {
-	let query = "{ hello }"
-	let result = try graphql(schema: schema, query: query)
-	return {
-		request, response in
-		// Respond with a simple message.
-		response.setHeader(.contentType, value: "text/html")
-		response.appendBody(string: result)
-		// Ensure that response.completed() is called when your processing is done.
-		response.completed()
-	}
-}
-
 // configure the graph
 let schema = try GraphQLSchema(
 	query: GraphQLObjectType(
@@ -61,6 +48,22 @@ let schema = try GraphQLSchema(
 		]
 	)
 )
+
+func graphQLHandler(data: [String:Any]) throws -> RequestHandler {
+	let query = "{ hello }"
+	let result = try graphql(schema: schema, request: query)
+
+	return {
+		request, response in
+		// Respond with a simple message.
+		response.setHeader(.contentType, value: "text/html")
+		response.appendBody(string: String(describing: result))
+		// Ensure that response.completed() is called when your processing is done.
+		response.completed()
+	}
+}
+
+
 
 // Configuration data for an example server.
 // This example configuration shows how to launch a server
@@ -79,6 +82,7 @@ let confData = [
 			"port":8181,
 			"routes":[
 				["method":"get", "uri":"/", "handler":handler],
+				["method":"get", "uri":"/graphql", "handler":graphQLHandler],
 				["method":"get", "uri":"/**", "handler":PerfectHTTPServer.HTTPHandler.staticFiles,
 				 "documentRoot":"./webroot",
 				 "allowResponseFilters":true]
